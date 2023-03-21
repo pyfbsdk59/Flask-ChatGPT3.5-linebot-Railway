@@ -43,15 +43,19 @@
 
 
 
-#### 0. GPT3 TelegramBot Vercel部署版本。程式猿影音教學參考。請支持且訂閱加按讚感謝他的辛勞。
+#### GPT3 TelegramBot Vercel部署版本。程式猿影音教學參考。請支持且訂閱加按讚感謝他的辛勞。
 
 https://www.youtube.com/watch?v=eKKEa6NhCd0
-
 
 <div align="center">
   <img src="demo/demo0.png" width="800"/>
 </div>
 
+
+#### 0. Railway提供免費Starter Plan，每個月有5美元或500小時執行時間的免費額度。所以一個月大概可以用20天上下。不用時請刪掉專案。只要存活著就會計算時間。據官方網站說，服務不會沉睡。
+<div align="center">
+  <img src="demo/railway0.png" width="600"/>
+</div>
 
 
 #### 1. 註冊Railway帳號後，開啟新專案New Project，匯入import已經fork過來的本專案。
