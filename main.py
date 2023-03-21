@@ -16,11 +16,9 @@ import openai
 	
 openai.api_key = os.getenv("OPENAI_API_KEY")
 line_bot_api = LineBotApi(os.getenv("LINE_CHANNEL_ACCESS_TOKEN"))
-parser = WebhookParser(os.getenv("LINE_CHANNEL_SECRET"))
+#parser = WebhookParser(os.getenv("LINE_CHANNEL_SECRET"))
+handler = WebhookHandler(os.getenv("LINE_CHANNEL_SECRET")) 
 
-
-chat_language = os.getenv("INIT_LANGUAGE", default = "zh")
-	
 
 	
 conversation = []
@@ -76,12 +74,12 @@ def callback():
     app.logger.info("Request body: " + body)
     # handle webhook body
     try:
-        parser.handle(body, signature)
+        handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
     return 'OK'
 
-@parser.add(MessageEvent, message=TextMessage)
+@handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     # Get user's message
     user_message = event.message.text
@@ -100,6 +98,6 @@ def handle_message(event):
 
 
 
-if __name__ == "__main__":
-    # Running server
-    app.run(debug=True)
+
+if __name__ == '__main__':
+	    app.run(debug=True, port=os.getenv("PORT", default=5000))
