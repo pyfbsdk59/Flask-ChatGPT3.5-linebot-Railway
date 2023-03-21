@@ -1,5 +1,5 @@
-# Flask-GPT3.5-linebot-Railway
-# 一個使用Flask框架和GPT3模型官方API，創造一個linebot，快速建置於平台Railway。
+# Flask-ChatGPT3.5-linebot-Railway
+# 一個使用Flask框架和GPT3.5 turbo模型官方API，創造一個linebot，快速建置於平台Railway。
 
 
 ## [TelegramBot Vercel GPT3.5 turbo/ChatGPT版本部屬](https://github.com/pyfbsdk59/Flask-official-ChatGPT-TelegramBot-Vercel)
@@ -43,7 +43,7 @@
 
 
 
-#### 0. 程式猿影音教學參考。請支持且訂閱加按讚感謝他的辛勞。
+#### 0. GPT3 Vercel部屬版本。程式猿影音教學參考。請支持且訂閱加按讚感謝他的辛勞。
 
 https://www.youtube.com/watch?v=eKKEa6NhCd0
 
@@ -55,7 +55,13 @@ https://www.youtube.com/watch?v=eKKEa6NhCd0
 
 
 #### 1. 註冊Railway帳號後，開啟新專案，匯入import已經fork過來的本專案。
+<div align="center">
+  <img src="demo/demo0r.png" width="300"/>
+</div>
 
+<div align="center">
+  <img src="demo/demo1r.png" width="600"/>
+</div>
 <div align="center">
   <img src="demo/demo2r.png" width="600"/>
 </div>
@@ -69,5 +75,8 @@ https://www.youtube.com/watch?v=eKKEa6NhCd0
   <img src="demo/demo4r.png" width="600"/>
 </div>
 
+#### 3. 若沒有出現網址，請到settings裡的Domains做設定，按下generate domain按鈕即可。
 
-
+<div align="center">
+  <img src="demo/demo5r.png" width="600"/>
+</div>
