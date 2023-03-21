@@ -1,131 +1,104 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from linebot import LineBotApi, WebhookParser, WebhookHandler
+from linebot.exceptions import InvalidSignatureError, LineBotApiError
+from linebot.models import MessageEvent, TextMessage
+from linebot.models import TextSendMessage
+import os
 
-import telegram, os
 from flask import Flask, request
-from telegram.ext import Dispatcher, MessageHandler, Filters
 
 
 
 #################
 import openai
 	
-openai.api_key = os.getenv("OPENAI_API_KEY") 
+openai.api_key = os.getenv("OPENAI_API_KEY")
+line_bot_api = LineBotApi(os.getenv("LINE_CHANNEL_ACCESS_TOKEN"))
+parser = WebhookParser(os.getenv("LINE_CHANNEL_SECRET"))
 
 
-chat_language = os.getenv("INIT_LANGUAGE", default = "zh") #amend here to change your preset language
+chat_language = os.getenv("INIT_LANGUAGE", default = "zh")
 	
-MSG_LIST_LIMIT = int(os.getenv("MSG_LIST_LIMIT", default = 20))
-LANGUAGE_TABLE = {
-	  "zh": "哈囉！",
-	  "en": "Hello!",
-      "jp": "こんにちは"
-	}
 
+	
+conversation = []
 
-class Prompts:
-    def __init__(self):
-        self.msg_list = []
-        self.msg_list.append(f"AI:{LANGUAGE_TABLE[chat_language]}")
-	    
-    def add_msg(self, new_msg):
-        if len(self.msg_list) >= MSG_LIST_LIMIT:
-            self.remove_msg()
-        self.msg_list.append(new_msg)
-	
-    def remove_msg(self):
-        self.msg_list.pop(0)
-	
-    def generate_prompt(self):
-        return '\n'.join(self.msg_list)	
-	
 class ChatGPT:  
+    
+
     def __init__(self):
-        self.prompt = Prompts()
-        self.model = os.getenv("OPENAI_MODEL", default = "text-davinci-003")
-        self.temperature = float(os.getenv("OPENAI_TEMPERATURE", default = 0))
-        self.frequency_penalty = float(os.getenv("OPENAI_FREQUENCY_PENALTY", default = 0))
-        self.presence_penalty = float(os.getenv("OPENAI_PRESENCE_PENALTY", default = 0.6))
-        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default = 240))
-	
-    def get_response(self):
-        response = openai.Completion.create(
+        
+        self.messages = conversation
+        self.model = os.getenv("OPENAI_MODEL", default = "gpt-3.5-turbo")
+
+
+
+    def get_response(self, user_input):
+        conversation.append({"role": "user", "content": user_input})
+        
+
+        response = openai.ChatCompletion.create(
 	            model=self.model,
-	            prompt=self.prompt.generate_prompt(),
-	            temperature=self.temperature,
-	            frequency_penalty=self.frequency_penalty,
-	            presence_penalty=self.presence_penalty,
-	            max_tokens=self.max_tokens
+                messages = self.messages
+
                 )
+
+        conversation.append({"role": "assistant", "content": response['choices'][0]['message']['content']})
         
         print("AI回答內容：")        
-        print(response['choices'][0]['text'].strip())
+        print(response['choices'][0]['message']['content'].strip())
 
-        print("AI原始回覆資料內容：")      
-        print(response)
+
         
-        return response['choices'][0]['text'].strip()
+        return response['choices'][0]['message']['content'].strip()
 	
-    def add_msg(self, text):
-        self.prompt.add_msg(text)
 
 
 
+chatgpt = ChatGPT()
 
-
-
-#####################
-
-telegram_bot_token = str(os.getenv("TELEGRAM_BOT_TOKEN"))
-
-
-
-# Load data from config.ini file
-#config = configparser.ConfigParser()
-#config.read('config.ini')
-
-# Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Initial Flask app
 app = Flask(__name__)
+#run_with_ngrok(app)   #starts ngrok when the app is run
 
-# Initial bot by Telegram access token
-bot = telegram.Bot(token=telegram_bot_token)
+@app.route("/")
+def hello():
+	return "Hello World from Flask in a uWSGI Nginx Docker container with \
+	     Python 3.8 (from the example template)"
+         
+@app.route("/callback", methods=['POST'])
+def callback():
+    # get X-Line-Signature header value
+    signature = request.headers['X-Line-Signature']
+    # get request body as text
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+    # handle webhook body
+    try:
+        parser.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
+    return 'OK'
+
+@parser.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    # Get user's message
+    user_message = event.message.text
 
 
-
-@app.route('/callback', methods=['POST'])
-def webhook_handler():
-    """Set route /hook with POST method will trigger this method."""
-    if request.method == "POST":
-        update = telegram.Update.de_json(request.get_json(force=True), bot)
-
-        # Update dispatcher process that handler to process this message
-        dispatcher.process_update(update)
-    return 'ok'
-
-
-def reply_handler(bot, update):
-    """Reply message."""
-    #text = update.message.text
-    #update.message.reply_text(text)
-    chatgpt = ChatGPT()        
+    reply_msg = chatgpt.get_response(user_message)
     
-    chatgpt.prompt.add_msg(update.message.text) #人類的問題 the question humans asked
-    ai_reply_response = chatgpt.get_response() #ChatGPT產生的回答 the answers that ChatGPT gave
     
-    update.message.reply_text(ai_reply_response) #用AI的文字回傳 reply the text that AI made
+    print(reply_msg)
 
-# New a dispatcher for bot
-dispatcher = Dispatcher(bot, None)
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=reply_msg)
+    )
 
-# Add handler for handling message, there are many kinds of message. For this handler, it particular handle text
-# message.
-dispatcher.add_handler(MessageHandler(Filters.text, reply_handler))
+
+
 
 if __name__ == "__main__":
     # Running server

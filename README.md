@@ -1,5 +1,5 @@
-# Flask-ChatGPT-TelegramBot-Vercel
-# 一個使用Flask框架和GPT3模型官方API，創造一個TelegramBot，快速建置於平台Vercel。
+# Flask-GPT3.5-linebot-Railway
+# 一個使用Flask框架和GPT3模型官方API，創造一個linebot，快速建置於平台Railway。
 
 
 ## [TelegramBot Vercel GPT3.5 turbo/ChatGPT版本部屬](https://github.com/pyfbsdk59/Flask-official-ChatGPT-TelegramBot-Vercel)
@@ -37,8 +37,8 @@
   <img src="demo/link4.png" width="700"/>
 </div>
 
-### [English](https://github.com/pyfbsdk59/Flask-ChatGPT-TelegramBot-Vercel/blob/main/README_en.md)
-### [日本語](https://github.com/pyfbsdk59/Flask-ChatGPT-TelegramBot-Vercel/blob/main/README_jp.md)
+### [English](https://github.com/pyfbsdk59/Flask-GPT3.5-linebot-Railway/blob/main/README_en.md)
+### [日本語](https://github.com/pyfbsdk59/Flask-GPT3.5-linebot-Railway/blob/main/README_jp.md)
 
 
 
